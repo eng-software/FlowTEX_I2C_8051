@@ -17,7 +17,7 @@ void    UARTOpen()
     ES = 0;
 }
 
-void    UARTSend(char *ptBuffer, char BufferLen)
+void    UARTSend(const char *ptBuffer, char BufferLen)
 {
     while(BufferLen--)
     {
