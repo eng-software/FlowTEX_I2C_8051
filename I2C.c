@@ -1,20 +1,58 @@
+/*
+  I2C.c
+  
+  Created: 28/06/2021
+  Author: henrique.coser
+  
+  This example code is in the Public Domain
+  This software is distributed on an "AS IS" BASIS, 
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+  either express or implied.
+  
+  Este código de exemplo é de uso publico,
+  Este software é distribuido na condição "COMO ESTÁ",
+  e NÃO SÃO APLICÁVEIS QUAISQUER GARANTIAS, implicitas 
+  ou explicitas
+*/
+
+/*-----------------------------------------------------------------------------
+    INCLUDES
+-----------------------------------------------------------------------------*/
 #include <REGX52.H>
 
-#define SDA P0_0
-#define SCL P0_1
- 
+/*-----------------------------------------------------------------------------
+    DEFINES
+-----------------------------------------------------------------------------*/
+
+//SDA and SCL pin setup
+#define SDA     P0_0
+#define SCL     P0_1
+
+/*-----------------------------------------------------------------------------
+    IMPLEMENTATION
+-----------------------------------------------------------------------------*/
+
+/*
+    I2C Pin initialization
+*/
 void I2CInit()
 {
     SDA = 1;
     SCL = 1;
 }
- 
+
+/*
+    I2C Start condition
+*/
 void I2CStart()
 {
     SDA = 0;
     SCL = 0;
 }
  
+/*
+    I2C Restart condition
+*/
 void I2CRestart()
 {
     SDA = 1;
@@ -23,6 +61,9 @@ void I2CRestart()
     SCL = 0;
 }
  
+/*
+    I2C Stop condition
+*/
 void I2CStop()
 {
     SCL = 0;
@@ -31,6 +72,9 @@ void I2CStop()
     SDA = 1;
 }
  
+/*
+    Send ACK
+*/
 void I2CAck()
 {
     SDA = 0;
@@ -39,6 +83,9 @@ void I2CAck()
     SDA = 1;
 }
  
+/*
+    Send NACK
+*/
 void I2CNak()
 {
     SDA = 1;
@@ -47,6 +94,11 @@ void I2CNak()
     SDA = 1;
 }
  
+/*
+    Send one byte through I2C protocol
+    
+    Returns 0 if ACK  , 1 if NACK
+*/
 unsigned char I2CSend(unsigned char Data)
 {
     unsigned char i, ack_bit;
@@ -70,6 +122,9 @@ unsigned char I2CSend(unsigned char Data)
     return ack_bit;
 }
  
+/*
+    Receive one byte through I2C protocol
+*/
 unsigned char I2CRead()
 {
     unsigned char i, Data=0;
@@ -86,9 +141,18 @@ unsigned char I2CRead()
     return Data;
 }
 
-void I2CTransfer(char addr,  char *ptBufferOut, char nDataOut, char *ptBufferIn, char nDataIn)
+/*
+    Transfer data through I2C port
+    
+    Send a write buffer and a read buffer.
+    Nothing is written if ptBufferOut is NULL or nDataOut is 0
+    Nothing is read if ptBufferIn is NULL or nDataIn is 0
+
+    Return 0 if ACK , 1 if NACK
+*/
+char I2CTransfer(char addr,  char *ptBufferOut, char nDataOut, char *ptBufferIn, char nDataIn)
 {
-    char ack = 0;
+    char ack = 1;
     
     //Shift address to add write/read bit
     addr = addr << 1;
@@ -131,17 +195,20 @@ void I2CTransfer(char addr,  char *ptBufferOut, char nDataOut, char *ptBufferIn,
         /*
         * Send slave address with Read bit set        
         */
-        I2CSend(addr);
+        ack = I2CSend(addr);
         
-        while(nDataIn)
+        if(!ack)
         {
-            *ptBufferIn++ = I2CRead();                
-            nDataIn--;
-            
-            if(nDataIn != 0)
-            {    
-                /* Send ack */
-                I2CAck();
+            while(nDataIn)
+            {
+                *ptBufferIn++ = I2CRead();                
+                nDataIn--;
+                
+                if(nDataIn != 0)
+                {    
+                    /* Send ack */
+                    I2CAck();
+                }
             }
         }
 
@@ -153,4 +220,7 @@ void I2CTransfer(char addr,  char *ptBufferOut, char nDataOut, char *ptBufferIn,
         /* Send stop condition */
         I2CStop();
     }
+    
+    
+    return ack;    
 }

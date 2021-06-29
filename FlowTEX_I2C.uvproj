@@ -49,7 +49,7 @@
           <OutputName>FlowTEX_I2C</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
@@ -231,7 +231,7 @@
               <RCB>
                 <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Size>0x10000</Size>
               </RCB>
               <RXB>
                 <Type>0</Type>
@@ -393,6 +393,16 @@
               <FileName>serial.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\serial.h</FilePath>
+            </File>
+            <File>
+              <FileName>systimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\systimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>systimer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\systimer.h</FilePath>
             </File>
           </Files>
         </Group>
